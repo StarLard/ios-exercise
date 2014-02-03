@@ -48,3 +48,5 @@ Use the custom control to build the following application...
   speed, etc...) of the radial menu.
 - Assume you are delivering to the client a binary along with your source
   code.
+- Your submission will be judged on both code quality and user
+  experience.
