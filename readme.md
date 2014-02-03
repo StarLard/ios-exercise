@@ -41,6 +41,7 @@ Use the custom control to build the following application...
 - Also see [wikipedia](http://en.wikipedia.org/wiki/Pie_menu).
 
 ## Guidelines
+- Use git and send us a link to the repository (Github, Bitbucket, etc...)
 - Do not use any third party libraries.
 - Do not use storyboards or xibs. Everything should be built
   programmatically.
