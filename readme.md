@@ -30,7 +30,7 @@ Use the custom control to build the following application...
       should contain h, 1, and 3).
         - Selecting one of numbered menu items should cause that
           screen to slide in from the left or the right. In this case
-          selecteing 1 would cause screen 1 to slide in from the left.
+          selecting 1 would cause screen 1 to slide in from the left.
           Selecting 3 would cause screen 3 to slide in from the right.
         - Selecting h will cause the home screen to slide in from the
           top.
