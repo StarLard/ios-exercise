@@ -25,9 +25,10 @@ Use the custom control to build the following application...
         - Selecting one of the items should cause you to transition to
           the selected screen. The selected screen should slide in from
           the bottom.
-    - From screens 1, 2, and 3 the menu items should be h, and the two
-      other numbered screens (e.g. if you are on screen 2 the menu
-      should contain h, 1, and 3).
+    - From screens 1, 2, and 3 the menu items should be h, and the other
+      adjacent screens (e.g. if you are on screen 2 the menu should
+      contain h, 1, and 3 and if you are on screen 3 the menu should
+      contain h and 2).
         - Selecting one of numbered menu items should cause that
           screen to slide in from the left or the right. In this case
           selecting 1 would cause screen 1 to slide in from the left.
