@@ -1,54 +1,40 @@
 # thirteen23 iOS Exercise
 
 ## Instructions
-### Step 1
-Create a custom control for a radial menu that exhibits the following
-behavior.
+Create a simple app that contains a grid of images based on the below specification. Your submission will be judged on both code quality and user experience.
 
-- Tap and hold anywhere on the screen to animate in the menu.
-    - If you pressed on the left side of the screen the menu items will
-      animate out from where you pressed to the right.
-    - If you pressed on the right side of the screen the menu items will
-      animate out from where you pressed to the left.
-![](./Left-Right.jpg?raw=true)
-- Sliding your finger over to one of the menu items will select it.
-
-### Step 2
-Use the custom control to build the following application...
-
-![](./Architecture.jpg?raw=true)
-
-- There are 4 screens. Home, 1, 2, and 3. Each screen should have a
-  white background and should have the name printed in the center.
-- Use the radial menu to move between the screens.
-    - From the home screen the menu items should be 1, 2, and 3.
-        - Selecting one of the items should cause you to transition to
-          the selected screen. The selected screen should slide in from
-          the bottom.
-    - From screens 1, 2, and 3 the menu items should be h, and the other
-      adjacent screens (e.g. if you are on screen 2 the menu should
-      contain h, 1, and 3 and if you are on screen 3 the menu should
-      contain h and 2).
-        - Selecting one of numbered menu items should cause that
-          screen to slide in from the left or the right. In this case
-          selecting 1 would cause screen 1 to slide in from the left.
-          Selecting 3 would cause screen 3 to slide in from the right.
-        - Selecting h will cause the home screen to slide in from the
-          top.
-
-## Notes
-- For an example of a radial menu, see the Pinterest iPad app (Tap
-  and hold on an item to activate the menu.)
-- Also see [wikipedia](http://en.wikipedia.org/wiki/Pie_menu).
-
-## Guidelines
-- Use git and send us a link to the repository (Github, Bitbucket, etc...)
+## Requirements / Restrictions
+- Use proper git procedures and link us to the repository (Github, Bitbucket, etc…)
 - Do not use any third party libraries.
-- Do not use storyboards or xibs. Everything should be built
-  programmatically.
-- Use your own best judgement for the design (size, angles, transtion
-  speed, etc...) of the radial menu.
-- Assume you are delivering to the client a binary along with your source
-  code.
-- Your submission will be judged on both code quality and user
-  experience.
+- Do not use storyboards or xibs. Everything should be built programmatically.
+- Use your own best judgement for the design that is not addressed in the specification.
+- Assume you are delivering the source code to a client.
+
+## Specifications
+The wireframe below demonstrates all of the necessary UI elements. The trash can images can be found in the images directory.
+
+- You must download and persist nine images and positions in the grid.
+
+- To get the image urls...
+    - Hit https://t23-pics.herokuapp.com/pics for an array of image ids
+    - Hit https://t23-pics.herokuapp.com/pics/{id} to get each image's
+      url
+      
+- If there are no images downloaded, you must show a button, when clicked your app will download all of the images.
+- Do not show the grid until all the images are loaded.
+- Touching an image and moving over another image, and releasing will switch the image positions.
+- Touching an image and moving over the trash can and releasing will delete the image completely.
+- If you delete an image, the view will not reshuffle to fill the empty space.
+- Any errors should be handled gracefully and notify the user where appropriate
+
+###Layout
+![](./layout.png)
+
+###Layout with missing image
+![](./layout missing.png)
+
+## Caveats
+Images are hosted on S3 for more information about this issue, see:
+http://mobile.awsblog.com/post/Tx2QM69ZE6BGTYX/Preparing-Your-Apps-for-iOS-9
+
+
