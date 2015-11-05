@@ -1,13 +1,13 @@
 # thirteen23 iOS Exercise
 
 ## Instructions
-Create a simple app that contains a grid of images based on the below specification. Your submission will be judged on both code quality and user experience.
+Create a simple app that contains a grid of images based on the below specification. Your submission will be judged on both user experience and code quality.
 
 ## Requirements / Restrictions
 - Use proper git procedures and link us to the repository (Github, Bitbucket, etc…)
 - Do not use any third party libraries.
 - Do not use storyboards or xibs. Everything should be built programmatically.
-- Use your own best judgement for the design that is not addressed in the specification.
+- Use your own best judgment on how to creatively handle any edge cases, design or UX not addressed in the specification.
 - Assume you are delivering the source code to a client.
 
 ## Specifications
@@ -31,7 +31,7 @@ The wireframe below demonstrates all of the necessary UI elements. The trash can
 ![](./layout.png)
 
 ###Layout with missing image
-![](./layout missing.png)
+![](./layout-missing.png)
 
 ## Caveats
 Images are hosted on S3 for more information about this issue, see:
