@@ -13,7 +13,7 @@ Create a simple app that contains a grid of images based on the below specificat
 ## Specifications
 The wireframe below demonstrates all of the necessary UI elements. The trash can images can be found in the images directory.
 
-- You must download and persist nine images and positions in the grid.
+- You must download and persist nine images and their positions in the grid.
 
 - To get the image urls...
     - Hit https://t23-pics.herokuapp.com/pics for an array of image ids
@@ -21,10 +21,11 @@ The wireframe below demonstrates all of the necessary UI elements. The trash can
       url
       
 - If there are no images downloaded, you must show a button, when clicked your app will download all of the images.
-- Do not show the grid until all the images are loaded.
-- Touching an image and moving over another image, and releasing will switch the image positions.
+- Do not show the image grid until all the images are loaded.
+- Give us feedback if the images are in order
+- The images in the grid are dragable and can be moved into different grid positions. If a position is already occupied, the images are swapped.
 - Touching an image and moving over the trash can and releasing will delete the image completely.
-- If you delete an image, the view will not reshuffle to fill the empty space.
+- If you delete an image, the grid will not reshuffle to fill the empty space.
 - Any errors should be handled gracefully and notify the user where appropriate
 
 ###Layout
