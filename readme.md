@@ -6,7 +6,7 @@ Create a simple app that contains a grid of images based on the below specificat
 ## Requirements / Restrictions
 - Use proper git procedures and link us to the repository (Github, Bitbucket, etc…)
 - Do not use any third party libraries.
-- Do not use storyboards or xibs. Everything should be built programmatically.
+- Use Storyboards.
 - Use your own best judgment on how to creatively handle any edge cases, design or UX not addressed in the specification.
 - Assume you are delivering the source code to a client.
 
