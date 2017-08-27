@@ -1,5 +1,5 @@
 //
-//  imagesCollectionViewCell.swift
+//  ImagesCollectionViewCell.swift
 //  thirteen23 Demo
 //
 //  Created by Caleb Friden on 8/26/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class imagesCollectionViewCell: UICollectionViewCell {
+class ImagesCollectionViewCell: UICollectionViewCell {
     // MARK: Properties (IBOutlet)
     @IBOutlet weak var imageView: UIImageView!    
     

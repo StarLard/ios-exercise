@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     // MARK: Properties (IBOutlet)
     @IBOutlet weak var imagesCollectionView: UICollectionView!
@@ -36,15 +36,27 @@ class ViewController: UIViewController {
                     guard let result = result else {
                         fatalError("Result from API was nil")
                     }
-                    // Load images
-                    print(result)
+                    guard let imageURL = URL(string: result[0]) else {
+                        fatalError("Unable to generate URL")
+                    }
+                    self.downloadImageFromUrl(url: imageURL, imageID: id) { error in
+                        if let error = error {
+                            print(error)
+                            self.presentAlert(title: "Unable to download images", message: "Please try again")
+                            return
+                        }
+                        self.downloadButton.isHidden = true
+                        self.imagesCollectionView.reloadData()
+                    }
                 }
             }
         }
     }
     
     // MARK: Properties (Private)
-    private enum APIError: Error {
+    private var images: [Image] = []
+    
+    private enum DemoError: Error {
         case couldNotFetch(reason: String)
         case noResponse(reason: String)
         case conversionFailed(reason: String)
@@ -58,7 +70,9 @@ class ViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    private func getDataFromAPI(jsonKey: String, apppendix: String? = nil, completionHandler: @escaping ([String]?, Error?) -> Void) {
+    private func getDataFromAPI(jsonKey: String,
+                                apppendix: String? = nil,
+                                completionHandler: @escaping (_ results: [String]?, _ error: Error?) -> Void) {
         var results: [String] = []
         var apiAddress = "https://t23-pics.herokuapp.com/pics"
         if let apppendix = apppendix {
@@ -71,29 +85,29 @@ class ViewController: UIViewController {
         let session = URLSession.shared
         let task = session.dataTask(with: urlRequest) { data, response, error in
             if let error = error {
-                completionHandler(nil, APIError.couldNotFetch(reason: "Error fetching image data: \(error)"))
+                completionHandler(nil, DemoError.couldNotFetch(reason: "Error fetching data: \(error)"))
                 return
             }
             guard let responseData = data else {
-                completionHandler(nil, APIError.noResponse(reason: "Did not recieve data from API call"))
+                completionHandler(nil, DemoError.noResponse(reason: "Did not recieve data from API call"))
                 return
             }
             do {
                 guard let dataJSON = try JSONSerialization.jsonObject(with: responseData, options: [])
                     as? [String: Any] else {
-                        completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert response data to JSON"))
+                        completionHandler(nil, DemoError.conversionFailed(reason: "Error trying to convert response data to JSON"))
                         return
                 }
                 if apppendix == nil {
                     guard let resultData = dataJSON[jsonKey] as? [String] else {
-                        completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
+                        completionHandler(nil, DemoError.conversionFailed(reason: "Could not get results from JSON"))
                         return
                     }
                     results = resultData
                 }
                 else {
                     guard let resultData = dataJSON[jsonKey] as? String else {
-                        completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
+                        completionHandler(nil, DemoError.conversionFailed(reason: "Could not get results from JSON"))
                         return
                     }
                     results.append(resultData)
@@ -102,11 +116,58 @@ class ViewController: UIViewController {
                 return
                 
             } catch {
-                completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert data to JSON"))
+                completionHandler(nil, DemoError.conversionFailed(reason: "Error trying to convert data to JSON"))
                 return
             }
         }
         task.resume()
+    }
+    
+    private func downloadImageFromUrl(url: URL,
+                         imageID: String,
+                         completionHandler: @escaping (_ error: Error?) -> Void) {
+        URLSession.shared.dataTask(with: url) {
+            (data, response, error) in
+            if let error = error {
+                completionHandler(DemoError.couldNotFetch(reason: "Error fetching image data: \(error)"))
+                return
+            }
+            guard let responseData = data else {
+                completionHandler(DemoError.noResponse(reason: "Did not recieve image data from server"))
+                return
+            }
+            print("Download for \(response?.suggestedFilename ?? url.lastPathComponent) finished")
+            DispatchQueue.main.async() { () -> Void in
+                guard let image = UIImage(data: responseData) else {
+                    fatalError("Could not convert data to image")
+                }
+                DemoService.sharedDemoService.addNewImage(image: image,
+                                                          imageID: imageID,
+                                                          imageName: response?.suggestedFilename ?? url.lastPathComponent)
+                completionHandler(nil)
+            }
+        }.resume()
+    }
+    
+    // MARK: Collection View Delegate
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return images.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let image = images[indexPath.row]
+        if image.position < 0 {
+            DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(indexPath.row))
+        }
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imagesCollectionViewCell", for: indexPath) as! ImagesCollectionViewCell
+        cell.tag = indexPath.row
+        cell.imageView.image = UIImage(data: (image.data as Data?)!)
+        
+        return cell
     }
 
     // MARK: View Life Cycle
@@ -115,6 +176,10 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         if !DemoService.sharedDemoService.imagesAreLoaded() {
             downloadButton.isHidden = false
+        } else {
+            images = DemoService.sharedDemoService.getImages()
+            images = images.sorted(by: { $0.position > $1.position })
+            imagesCollectionView.reloadData()
         }
     }
 
