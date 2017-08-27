@@ -46,7 +46,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                             return
                         }
                         self.downloadButton.isHidden = true
-                        self.imagesCollectionView.reloadData()
+                        self.refreshCollectionView()
                     }
                 }
             }
@@ -55,6 +55,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // MARK: Properties (Private)
     private var images: [Image] = []
+    
+    private func refreshCollectionView() {
+        self.images = DemoService.sharedDemoService.getImages()
+        self.images = images.sorted(by: { $0.position > $1.position })
+        self.imagesCollectionView.reloadData()
+    }
     
     private enum DemoError: Error {
         case couldNotFetch(reason: String)
@@ -177,9 +183,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         if !DemoService.sharedDemoService.imagesAreLoaded() {
             downloadButton.isHidden = false
         } else {
-            images = DemoService.sharedDemoService.getImages()
-            images = images.sorted(by: { $0.position > $1.position })
-            imagesCollectionView.reloadData()
+            refreshCollectionView()
         }
     }
 
