@@ -17,10 +17,26 @@ class ViewController: UIViewController {
 
     // MARK: Properties (IBAction)
     @IBAction func downloadPressed(_ sender: Any) {
-        self.loadImageIDs()
+        self.getDataFromAPI() { result, error in
+            if let error = error {
+                print(error)
+                self.presentAlert(title: "Unable to download images", message: "Please try again")
+                return
+            }
+            guard let result = result else {
+                fatalError("Result from API was nil")
+            }
+            print(result)
+        }
     }
     
     // MARK: Properties (Private)
+    private enum APIError: Error {
+        case couldNotFetch(reason: String)
+        case noResponse(reason: String)
+        case conversionFailed(reason: String)
+    }
+    
     private func presentAlert(title: String, message: String) {
         let alertController = UIAlertController(title: title,
                                                 message: message,
@@ -29,48 +45,36 @@ class ViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    private func loadImageIDs() {
-        let idsAddress = "https://t23-pics.herokuapp.com/pics"
-        guard let idsURL = URL(string: idsAddress) else {
+    private func getDataFromAPI(apppendices: [String]? = nil, completionHandler: @escaping ([String]?, Error?) -> Void) {
+        let apiAddress = "https://t23-pics.herokuapp.com/pics"
+        guard let apiURL = URL(string: apiAddress) else {
             fatalError("Unable to generate URL")
         }
-        let urlRequest = URLRequest(url: idsURL)
+        let urlRequest = URLRequest(url: apiURL)
         let session = URLSession.shared
         let task = session.dataTask(with: urlRequest) { data, response, error in
-            // do stuff with response, data & error here
             if let error = error {
-                print("Error fetching image IDs: \(error)")
-                self.presentAlert(title: "Unable to download images", message: "Please try again")
+                completionHandler(nil, APIError.couldNotFetch(reason: "Error fetching image data: \(error)"))
                 return
             }
-            // make sure we got data
             guard let responseData = data else {
-                print("Error: did not receive data")
-                self.presentAlert(title: "Unable to download images", message: "Please try again")
+                completionHandler(nil, APIError.noResponse(reason: "Did not recieve data from API call"))
                 return
             }
             do {
-                guard let idsJSON = try JSONSerialization.jsonObject(with: responseData, options: [])
+                guard let dataJSON = try JSONSerialization.jsonObject(with: responseData, options: [])
                     as? [String: Any] else {
-                        print("Error trying to convert response data to JSON")
-                        self.presentAlert(title: "Unable to download images", message: "Please try again")
+                        completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert response data to JSON"))
                         return
                 }
-                
-                // the todo object is a dictionary
-                // so we just access the title using the "title" key
-                // so check for a title and print it if we have one
-                guard let imageIDs = idsJSON["image_ids"] as? [String] else {
-                    print("Could not get ids list from JSON")
+                guard let resultData = dataJSON["image_ids"] as? [String] else {
+                    completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
                     return
                 }
+                completionHandler(resultData, nil)
                 
-                // now we have the todo
-                // let's just print it to prove we can access it
-                print(imageIDs)
             } catch  {
-                print("Error trying to convert data to JSON")
-                self.presentAlert(title: "Unable to download images", message: "Please try again")
+                completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert data to JSON"))
                 return
             }
         }
