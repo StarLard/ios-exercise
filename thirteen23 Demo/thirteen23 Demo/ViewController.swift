@@ -17,7 +17,7 @@ class ViewController: UIViewController {
 
     // MARK: Properties (IBAction)
     @IBAction func downloadPressed(_ sender: Any) {
-        self.getDataFromAPI() { result, error in
+        self.getDataFromAPI(jsonKey: "image_ids") { result, error in
             if let error = error {
                 print(error)
                 self.presentAlert(title: "Unable to download images", message: "Please try again")
@@ -26,7 +26,20 @@ class ViewController: UIViewController {
             guard let result = result else {
                 fatalError("Result from API was nil")
             }
-            print(result)
+            for id in result {
+                self.getDataFromAPI(jsonKey: "url", apppendix: id) { result, error in
+                    if let error = error {
+                        print(error)
+                        self.presentAlert(title: "Unable to download images", message: "Please try again")
+                        return
+                    }
+                    guard let result = result else {
+                        fatalError("Result from API was nil")
+                    }
+                    // Load images
+                    print(result)
+                }
+            }
         }
     }
     
@@ -45,8 +58,12 @@ class ViewController: UIViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    private func getDataFromAPI(apppendices: [String]? = nil, completionHandler: @escaping ([String]?, Error?) -> Void) {
-        let apiAddress = "https://t23-pics.herokuapp.com/pics"
+    private func getDataFromAPI(jsonKey: String, apppendix: String? = nil, completionHandler: @escaping ([String]?, Error?) -> Void) {
+        var results: [String] = []
+        var apiAddress = "https://t23-pics.herokuapp.com/pics"
+        if let apppendix = apppendix {
+            apiAddress = apiAddress  + "/\(apppendix)"
+        }
         guard let apiURL = URL(string: apiAddress) else {
             fatalError("Unable to generate URL")
         }
@@ -67,13 +84,24 @@ class ViewController: UIViewController {
                         completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert response data to JSON"))
                         return
                 }
-                guard let resultData = dataJSON["image_ids"] as? [String] else {
-                    completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
-                    return
+                if apppendix == nil {
+                    guard let resultData = dataJSON[jsonKey] as? [String] else {
+                        completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
+                        return
+                    }
+                    results = resultData
                 }
-                completionHandler(resultData, nil)
+                else {
+                    guard let resultData = dataJSON[jsonKey] as? String else {
+                        completionHandler(nil, APIError.conversionFailed(reason: "Could not get results from JSON"))
+                        return
+                    }
+                    results.append(resultData)
+                }
+                completionHandler(results, nil)
+                return
                 
-            } catch  {
+            } catch {
                 completionHandler(nil, APIError.conversionFailed(reason: "Error trying to convert data to JSON"))
                 return
             }
