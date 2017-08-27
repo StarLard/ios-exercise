@@ -74,17 +74,17 @@
                                 </constraints>
                             </imageView>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pR6-R0-HAC">
-                                <rect key="frame" x="126" y="318" width="122" height="30"/>
+                                <rect key="frame" x="126" y="243.5" width="122" height="30"/>
                                 <state key="normal" title="Download Images"/>
                                 <connections>
                                     <action selector="downloadPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wez-0M-MwX"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="wn9-ez-Brr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="0Ys-MH-0TU"/>
-                            <constraint firstItem="pR6-R0-HAC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="5ig-er-32Q"/>
+                            <constraint firstItem="pR6-R0-HAC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-75" id="5ig-er-32Q"/>
                             <constraint firstItem="wn9-ez-Brr" firstAttribute="top" secondItem="d90-Sr-CEE" secondAttribute="bottom" constant="25" id="Fai-Pn-bkb"/>
                             <constraint firstItem="d90-Sr-CEE" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="JvF-gx-1Tf"/>
                             <constraint firstItem="pR6-R0-HAC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="MOy-w9-CHA"/>

@@ -17,20 +17,28 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
     // MARK: Properties (IBAction)
     @IBAction func downloadPressed(_ sender: Any) {
+        downloadButton.isEnabled = false
+        self.showActivityIndicator()
+        
         self.getDataFromAPI(jsonKey: "image_ids") { result, error in
             if let error = error {
                 print(error)
+                self.hideActivityIndicator()
                 self.presentAlert(title: "Unable to download images", message: "Please try again")
+                self.downloadButton.isEnabled = true
                 return
             }
             guard let result = result else {
                 fatalError("Result from API was nil")
             }
+            let downloadGroup = DispatchGroup()
+            var downloadGroupErrors: [Error] = []
             for id in result {
-                self.getDataFromAPI(jsonKey: "url", apppendix: id) { result, error in
-                    if let error = error {
-                        print(error)
-                        self.presentAlert(title: "Unable to download images", message: "Please try again")
+                downloadGroup.enter()
+                self.getDataFromAPI(jsonKey: "url", apppendix: id) { result, apiError in
+                    if let apiError = apiError {
+                        downloadGroupErrors.append(apiError)
+                        downloadGroup.leave()
                         return
                     }
                     guard let result = result else {
@@ -39,22 +47,35 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     guard let imageURL = URL(string: result[0]) else {
                         fatalError("Unable to generate URL")
                     }
-                    self.downloadImageFromUrl(url: imageURL, imageID: id) { error in
-                        if let error = error {
-                            print(error)
-                            self.presentAlert(title: "Unable to download images", message: "Please try again")
-                            return
+                    self.downloadImageFromUrl(url: imageURL, imageID: id) { downloadError in
+                        if let downloadError = downloadError {
+                            downloadGroupErrors.append(downloadError)
                         }
-                        self.downloadButton.isHidden = true
-                        self.refreshCollectionView()
+                        downloadGroup.leave()
                     }
                 }
+            }
+            downloadGroup.notify(queue: DispatchQueue.main) {
+                if downloadGroupErrors.count > 0 {
+                    for error in downloadGroupErrors {
+                        print(error)
+                    }
+                    self.hideActivityIndicator()
+                    self.presentAlert(title: "Unable to download images", message: "Please try again")
+                    self.downloadButton.isEnabled = true
+                    return
+                }
+                self.hideActivityIndicator()
+                self.downloadButton.isHidden = true
+                self.downloadButton.isEnabled = true
+                self.refreshCollectionView()
             }
         }
     }
     
     // MARK: Properties (Private)
     private var images: [Image] = []
+    private let loadingView = UIView()
     
     private func refreshCollectionView() {
         self.images = DemoService.sharedDemoService.getImages()
@@ -153,6 +174,38 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 completionHandler(nil)
             }
         }.resume()
+    }
+    
+    func showActivityIndicator() {
+        DispatchQueue.main.async {
+            let spinner = UIActivityIndicatorView()
+            
+            self.loadingView.frame = self.view.frame
+            self.loadingView.center = self.view.center
+            self.loadingView.backgroundColor = UIColor.white
+            self.loadingView.alpha = 0.3
+            
+            spinner.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+            spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
+            spinner.color = UIColor.gray
+            spinner.center = self.loadingView.center
+            spinner.startAnimating()
+            
+            self.loadingView.addSubview(spinner)
+            self.view.addSubview(self.loadingView)
+        }
+    }
+    
+    func hideActivityIndicator() {
+        DispatchQueue.main.async {
+            for view in self.loadingView.subviews {
+                if let spinner = view as? UIActivityIndicatorView {
+                    spinner.stopAnimating()
+                    spinner.removeFromSuperview()
+                }
+            }
+            self.loadingView.removeFromSuperview()
+        }
     }
     
     // MARK: Collection View Delegate
