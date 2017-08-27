@@ -9,7 +9,19 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    // MARK: Properties (IBOutlet)
+    @IBOutlet weak var imagesCollectionView: UICollectionView!
+    @IBOutlet weak var trashCanLid: UIImageView!
+    @IBOutlet weak var downloadButton: UIButton!
 
+    @IBAction func downloadPressed(_ sender: Any) {
+    }
+    
+    // MARK: Properties (Private)
+    var imageIDs: [String] = []
+
+    // MARK: View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -19,7 +31,6 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
 
 }
 

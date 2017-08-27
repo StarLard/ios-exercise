@@ -1,14 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11106"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="thirteen23_Demo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -16,11 +20,90 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="d90-Sr-CEE">
+                                <rect key="frame" x="0.0" y="20" width="375" height="467"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="SBo-iF-GzQ">
+                                    <size key="itemSize" width="75" height="75"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="25" minY="25" maxX="25" maxY="25"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="imagesCollectionViewCell" id="JWY-d2-Hj1" customClass="imagesCollectionViewCell" customModule="thirteen23_Demo" customModuleProvider="target">
+                                        <rect key="frame" x="25" y="25" width="75" height="75"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Y5j-3A-0IV">
+                                                    <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
+                                                </imageView>
+                                            </subviews>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="bottom" secondItem="Y5j-3A-0IV" secondAttribute="bottom" id="AXC-uZ-0L7"/>
+                                            <constraint firstItem="Y5j-3A-0IV" firstAttribute="leading" secondItem="JWY-d2-Hj1" secondAttribute="leading" id="Pc2-oR-wNo"/>
+                                            <constraint firstItem="Y5j-3A-0IV" firstAttribute="top" secondItem="JWY-d2-Hj1" secondAttribute="top" id="ZOs-CB-wTR"/>
+                                            <constraint firstAttribute="trailing" secondItem="Y5j-3A-0IV" secondAttribute="trailing" id="dX9-uo-hgT"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="imageView" destination="Y5j-3A-0IV" id="ETv-ZG-L0K"/>
+                                        </connections>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TrashCan" translatesAutoresizingMaskIntoConstraints="NO" id="oym-wN-xhU">
+                                <rect key="frame" x="147.5" y="542" width="80" height="100"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="CaC-Kp-ZIC"/>
+                                    <constraint firstAttribute="width" constant="80" id="ShV-pB-gmg"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="TrashLid" translatesAutoresizingMaskIntoConstraints="NO" id="wn9-ez-Brr">
+                                <rect key="frame" x="145" y="512" width="85" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="25" id="JLI-6R-3QU"/>
+                                    <constraint firstAttribute="width" constant="85" id="n1d-XV-atG"/>
+                                </constraints>
+                            </imageView>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pR6-R0-HAC">
+                                <rect key="frame" x="126" y="318" width="122" height="30"/>
+                                <state key="normal" title="Download Images"/>
+                                <connections>
+                                    <action selector="downloadPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wez-0M-MwX"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="wn9-ez-Brr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="0Ys-MH-0TU"/>
+                            <constraint firstItem="pR6-R0-HAC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="5ig-er-32Q"/>
+                            <constraint firstItem="wn9-ez-Brr" firstAttribute="top" secondItem="d90-Sr-CEE" secondAttribute="bottom" constant="25" id="Fai-Pn-bkb"/>
+                            <constraint firstItem="d90-Sr-CEE" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="JvF-gx-1Tf"/>
+                            <constraint firstItem="pR6-R0-HAC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="MOy-w9-CHA"/>
+                            <constraint firstItem="d90-Sr-CEE" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Nv4-pK-TYC"/>
+                            <constraint firstAttribute="trailing" secondItem="d90-Sr-CEE" secondAttribute="trailing" id="OqN-0U-Ir9"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="oym-wN-xhU" secondAttribute="bottom" constant="25" id="eAp-as-rdz"/>
+                            <constraint firstItem="oym-wN-xhU" firstAttribute="top" secondItem="wn9-ez-Brr" secondAttribute="bottom" constant="5" id="we3-Ek-0xL"/>
+                            <constraint firstItem="oym-wN-xhU" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="wtm-Eh-Qz3"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="downloadButton" destination="pR6-R0-HAC" id="ypE-MX-czw"/>
+                        <outlet property="imagesCollectionView" destination="d90-Sr-CEE" id="asx-g5-kZJ"/>
+                        <outlet property="trashCanLid" destination="wn9-ez-Brr" id="OUs-4z-7LM"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="32.799999999999997" y="38.23088455772114"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="TrashCan" width="259" height="314"/>
+        <image name="TrashLid" width="316" height="68"/>
+    </resources>
 </document>
