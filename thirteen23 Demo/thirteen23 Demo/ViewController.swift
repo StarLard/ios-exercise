@@ -46,13 +46,20 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     // MARK: Properties (Private)
-    private var images: [Image] = []
+    private var imagesBuffer: [Image] = []
     private var selectedCell: ImagesCollectionViewCell? = nil
     private var canIsOpen: Bool = false
     
+    private func checkOrder() {
+        self.imagesBuffer = DemoService.sharedDemoService.getImages()
+        let expected = self.imagesBuffer.sorted(by: { $0.number < $1.number })
+        if expected == imagesBuffer {
+            self.presentAlert(title: "Congratulations!", message: "All the numbers are in order")
+        }
+    }
+    
     private func refreshCollectionView() {
-        self.images = DemoService.sharedDemoService.getImages()
-        self.images = images.sorted(by: { $0.position < $1.position })
+        self.checkOrder()
         self.imagesCollectionView.reloadData()
     }
     
@@ -122,6 +129,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
+    // MARK: Properties (Private)
     func handleLongGesture(gesture: UILongPressGestureRecognizer) {
         
         switch(gesture.state) {
@@ -144,14 +152,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         case UIGestureRecognizerState.ended:
             let gestureEndPoint = gesture.location(in: self.view)
             imagesCollectionView.endInteractiveMovement()
-            if trashView.frame.contains(gestureEndPoint) {
-                guard  let cell = selectedCell, let image = cell.image else {
-                    fatalError("Unable to get selected cell/image")
-                }
+            if trashView.frame.contains(gestureEndPoint), let cell = selectedCell, let image = cell.image {
                 self.closeCan()
-                self.images.remove(at: cell.tag)
                 DemoService.sharedDemoService.deleteImage(image: image)
                 self.refreshCollectionView()
+            } else {
+                self.checkOrder()
             }
             selectedCell = nil
         default:
@@ -165,23 +171,11 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return images.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        moveItemAt sourceIndexPath: IndexPath,
-                        to destinationIndexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: destinationIndexPath) as! ImagesCollectionViewCell
-        guard let image = cell.image else {
-            fatalError("Image for cell not set")
-        }
-        self.images.changeElementIndex(from: sourceIndexPath.row, to: destinationIndexPath.row)
-        cell.tag = destinationIndexPath.row
-        DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(destinationIndexPath.row))
+        return imagesBuffer.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let image = images[indexPath.row]
+        let image = imagesBuffer[indexPath.row]
         if image.position < 0 {
             DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(indexPath.row))
         }

@@ -55,11 +55,15 @@ class ImagesCollectionView: UICollectionView {
     
     override func endInteractiveMovement() {
         if let hoverIndexPath = self.indexPathForItem(at: previousPoint!), let interactiveIndexPath = self.interactiveIndexPath {
+            let hoverCell = self.cellForItem(at: hoverIndexPath) as? ImagesCollectionViewCell
+            if let interactiveImage = self.interactiveCell?.image, let hoverImage = hoverCell?.image {
+                DemoService.sharedDemoService.setImagePosition(image: interactiveImage, position: Int16(hoverIndexPath.row))
+                DemoService.sharedDemoService.setImagePosition(image: hoverImage, position: Int16(interactiveIndexPath.row))
+            }
             self.performBatchUpdates({
                 self.moveItem(at: interactiveIndexPath, to: hoverIndexPath)
                 self.moveItem(at: hoverIndexPath, to: interactiveIndexPath)
             }, completion: {(finished) in
-                self.interactiveIndexPath = hoverIndexPath
                 self.cleanup()
             })
         } else {
