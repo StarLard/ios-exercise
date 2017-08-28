@@ -12,7 +12,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // MARK: Properties (IBOutlet)
     @IBOutlet weak var imagesCollectionView: UICollectionView!
-    @IBOutlet weak var trashCanLid: UIImageView!
+    @IBOutlet weak var trashCanLidView: UIImageView!
     @IBOutlet weak var downloadButton: UIButton!
     @IBOutlet weak var trashView: UIStackView!
 
@@ -49,11 +49,30 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     // MARK: Properties (Private)
     private var images: [Image] = []
     private var selectedCell: ImagesCollectionViewCell? = nil
+    private var canIsOpen: Bool = false
     
     private func refreshCollectionView() {
         self.images = DemoService.sharedDemoService.getImages()
         self.images = images.sorted(by: { $0.position > $1.position })
         self.imagesCollectionView.reloadData()
+    }
+    
+    private func openCan() {
+        UIView.animate(withDuration:0.25, animations: {
+            self.trashCanLidView.transform = CGAffineTransform(rotationAngle: -CGFloat.pi/6)
+            self.trashCanLidView.center.y -= 15
+            self.trashCanLidView.center.x -= 15
+        })
+        self.canIsOpen = true
+    }
+    
+    private func closeCan() {
+        UIView.animate(withDuration:0.25, animations: {
+            self.trashCanLidView.transform = CGAffineTransform(rotationAngle: 0)
+            self.trashCanLidView.center.y += 15
+            self.trashCanLidView.center.x += 15
+        })
+        self.canIsOpen = false
     }
     
     private func downloadImages(completionHandler: @escaping (_ results: [(UIImage, Int16)]?, _ error: Error?) -> Void) {
@@ -117,6 +136,12 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
         case UIGestureRecognizerState.changed:
             imagesCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
+            let gestureCurrentPoint = gesture.location(in: self.view)
+            if trashView.frame.contains(gestureCurrentPoint) && !canIsOpen {
+                self.openCan()
+            } else if canIsOpen && !trashView.frame.contains(gestureCurrentPoint) {
+                self.closeCan()
+            }
         case UIGestureRecognizerState.ended:
             let gestureEndPoint = gesture.location(in: self.view)
             imagesCollectionView.endInteractiveMovement()
@@ -124,6 +149,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 guard  let cell = selectedCell, let image = cell.image else {
                     fatalError("Unable to get selected cell/image")
                 }
+                self.closeCan()
                 self.images.remove(at: cell.tag)
                 DemoService.sharedDemoService.deleteImage(image: image)
                 self.refreshCollectionView()

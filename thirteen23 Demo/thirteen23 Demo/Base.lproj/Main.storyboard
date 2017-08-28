@@ -103,7 +103,7 @@
                     <connections>
                         <outlet property="downloadButton" destination="pR6-R0-HAC" id="ypE-MX-czw"/>
                         <outlet property="imagesCollectionView" destination="d90-Sr-CEE" id="asx-g5-kZJ"/>
-                        <outlet property="trashCanLid" destination="wn9-ez-Brr" id="OUs-4z-7LM"/>
+                        <outlet property="trashCanLidView" destination="wn9-ez-Brr" id="qEf-Vm-5gT"/>
                         <outlet property="trashView" destination="5b8-DW-cyG" id="b2I-ed-dBE"/>
                     </connections>
                 </viewController>
