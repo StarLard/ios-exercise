@@ -14,6 +14,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var imagesCollectionView: UICollectionView!
     @IBOutlet weak var trashCanLid: UIImageView!
     @IBOutlet weak var downloadButton: UIButton!
+    @IBOutlet weak var trashView: UIStackView!
 
     // MARK: Properties (IBAction)
     @IBAction func downloadPressed(_ sender: Any) {
@@ -47,6 +48,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     // MARK: Properties (Private)
     private var images: [Image] = []
+    private var selectedCell: ImagesCollectionViewCell? = nil
     
     private func refreshCollectionView() {
         self.images = DemoService.sharedDemoService.getImages()
@@ -107,14 +109,26 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         switch(gesture.state) {
             
         case UIGestureRecognizerState.began:
-            guard let selectedIndexPath = self.imagesCollectionView.indexPathForItem(at: gesture.location(in: self.imagesCollectionView)) else {
+            guard let indexPath = self.imagesCollectionView.indexPathForItem(at: gesture.location(in: self.imagesCollectionView)) else {
                 break
             }
-            imagesCollectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
+            let cell = self.imagesCollectionView.cellForItem(at: indexPath) as! ImagesCollectionViewCell
+            self.selectedCell = cell
+            imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
         case UIGestureRecognizerState.changed:
             imagesCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
         case UIGestureRecognizerState.ended:
+            let gestureEndPoint = gesture.location(in: self.view)
             imagesCollectionView.endInteractiveMovement()
+            if trashView.frame.contains(gestureEndPoint) {
+                guard  let cell = selectedCell, let image = cell.image else {
+                    fatalError("Unable to get selected cell/image")
+                }
+                self.images.remove(at: cell.tag)
+                DemoService.sharedDemoService.deleteImage(image: image)
+                self.refreshCollectionView()
+            }
+            selectedCell = nil
         default:
             imagesCollectionView.cancelInteractiveMovement()
         }
@@ -170,6 +184,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongGesture))
         self.imagesCollectionView.addGestureRecognizer(longPressGesture)
+        self.imagesCollectionView.clipsToBounds = false
     }
 
     override func didReceiveMemoryWarning() {

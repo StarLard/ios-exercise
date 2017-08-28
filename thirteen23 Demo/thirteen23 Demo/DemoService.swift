@@ -61,6 +61,20 @@ class DemoService {
         }
     }
     
+    func deleteImage(image: Image) {
+        let context = CoreDataService.sharedCoreDataService.mainQueueContext
+        let number = image.number
+        context.delete(image)
+        do {
+            try context.save()
+        } catch {
+            fatalError("Failure to save context: \(error)")
+        }
+        CoreDataService.sharedCoreDataService.saveRootContext {
+            print("Deleted \(number).png")
+        }
+    }
+    
     func setImagePosition(image: Image, position: Int16) {
         let context = CoreDataService.sharedCoreDataService.mainQueueContext
         
