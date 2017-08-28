@@ -13,6 +13,7 @@ class ImagesCollectionView: UICollectionView {
     var interactiveIndexPath : IndexPath?
     var interactiveView : UIView?
     var interactiveCell : ImagesCollectionViewCell?
+    var highlightedCells : [ImagesCollectionViewCell] = []
     var swapSet : Set<SwapDescription> = Set()
     var previousPoint : CGPoint?
     
@@ -36,6 +37,18 @@ class ImagesCollectionView: UICollectionView {
     }
     
     override func updateInteractiveMovementTargetPosition(_ targetPosition: CGPoint) {
+        
+        if let hoverIndexPath = self.indexPathForItem(at: targetPosition), hoverIndexPath != self.interactiveIndexPath {
+            if let hoverCell = self.cellForItem(at: hoverIndexPath) as? ImagesCollectionViewCell, !highlightedCells.contains(hoverCell) {
+                hoverCell.displaysShadow = true
+                self.highlightedCells.append(hoverCell)
+            }
+        } else {
+            for cell in self.highlightedCells {
+                cell.displaysShadow = false
+            }
+            self.highlightedCells = []
+        }
         
         self.interactiveView?.center = targetPosition
         self.previousPoint = targetPosition
@@ -81,6 +94,10 @@ class ImagesCollectionView: UICollectionView {
         self.interactiveCell = nil
         self.interactiveIndexPath = nil
         self.previousPoint = nil
+        for cell in self.highlightedCells {
+            cell.displaysShadow = false
+        }
+        self.highlightedCells = []
         self.swapSet.removeAll()
     }
     
