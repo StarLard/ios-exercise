@@ -53,7 +53,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     private func refreshCollectionView() {
         self.images = DemoService.sharedDemoService.getImages()
-        self.images = images.sorted(by: { $0.position > $1.position })
+        self.images = images.sorted(by: { $0.position < $1.position })
         self.imagesCollectionView.reloadData()
     }
     
