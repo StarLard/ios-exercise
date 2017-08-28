@@ -2,11 +2,9 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="12141" systemVersion="16G29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Image" representedClassName="Image" syncable="YES" codeGenerationType="class">
         <attribute name="data" attributeType="Binary" syncable="YES"/>
-        <attribute name="id" attributeType="String" syncable="YES"/>
-        <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="position" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Image" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Image" positionX="-63" positionY="-18" width="128" height="75"/>
     </elements>
 </model>

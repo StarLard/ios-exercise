@@ -15,6 +15,8 @@
 		314D51601F521F6200A7D714 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 314D515E1F521F6200A7D714 /* LaunchScreen.storyboard */; };
 		314D516B1F521F6200A7D714 /* thirteen23_DemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314D516A1F521F6200A7D714 /* thirteen23_DemoTests.swift */; };
 		314D51761F521F6200A7D714 /* thirteen23_DemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 314D51751F521F6200A7D714 /* thirteen23_DemoUITests.swift */; };
+		85569B721F53859F00EEB811 /* UIViewControllerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85569B711F53859F00EEB811 /* UIViewControllerExtension.swift */; };
+		85569B741F538A9000EEB811 /* WebService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85569B731F538A9000EEB811 /* WebService.swift */; };
 		85DE95801F523F5C00B30987 /* trash_body.png in Resources */ = {isa = PBXBuildFile; fileRef = 85DE957D1F523F5C00B30987 /* trash_body.png */; };
 		85DE95811F523F5C00B30987 /* trash_body@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 85DE957E1F523F5C00B30987 /* trash_body@2x.png */; };
 		85DE95821F523F5C00B30987 /* trash_body@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 85DE957F1F523F5C00B30987 /* trash_body@3x.png */; };
@@ -98,6 +100,8 @@
 		314D51711F521F6200A7D714 /* thirteen23 DemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "thirteen23 DemoUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		314D51751F521F6200A7D714 /* thirteen23_DemoUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = thirteen23_DemoUITests.swift; sourceTree = "<group>"; };
 		314D51771F521F6200A7D714 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85569B711F53859F00EEB811 /* UIViewControllerExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewControllerExtension.swift; sourceTree = "<group>"; };
+		85569B731F538A9000EEB811 /* WebService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebService.swift; sourceTree = "<group>"; };
 		85DE957D1F523F5C00B30987 /* trash_body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trash_body.png; sourceTree = "<group>"; };
 		85DE957E1F523F5C00B30987 /* trash_body@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash_body@2x.png"; sourceTree = "<group>"; };
 		85DE957F1F523F5C00B30987 /* trash_body@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trash_body@3x.png"; sourceTree = "<group>"; };
@@ -207,6 +211,14 @@
 			path = "thirteen23 DemoUITests";
 			sourceTree = "<group>";
 		};
+		85569B701F53845000EEB811 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				85569B711F53859F00EEB811 /* UIViewControllerExtension.swift */,
+			);
+			name = Extension;
+			sourceTree = "<group>";
+		};
 		85DE957A1F523E9300B30987 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -223,6 +235,7 @@
 		85DE957B1F523E9E00B30987 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				85569B701F53845000EEB811 /* Extension */,
 				85DE95B41F5250BB00B30987 /* Service */,
 				85DE95B31F5250B000B30987 /* Controllers */,
 				85DE95891F5242BE00B30987 /* Prototypes */,
@@ -299,6 +312,7 @@
 			isa = PBXGroup;
 			children = (
 				85DE95B51F52510C00B30987 /* DemoService.swift */,
+				85569B731F538A9000EEB811 /* WebService.swift */,
 			);
 			name = Service;
 			sourceTree = "<group>";
@@ -524,6 +538,8 @@
 			files = (
 				314D51551F521F6200A7D714 /* ViewController.swift in Sources */,
 				314D51531F521F6200A7D714 /* AppDelegate.swift in Sources */,
+				85569B741F538A9000EEB811 /* WebService.swift in Sources */,
+				85569B721F53859F00EEB811 /* UIViewControllerExtension.swift in Sources */,
 				85DE95B61F52510C00B30987 /* DemoService.swift in Sources */,
 				85DE958B1F5242E700B30987 /* ImagesCollectionViewCell.swift in Sources */,
 				314D515B1F521F6200A7D714 /* thirteen23_Demo.xcdatamodeld in Sources */,
@@ -910,6 +926,7 @@
 				85DE95AA1F524F2700B30987 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		85DE95AC1F524F2700B30987 /* Build configuration list for PBXNativeTarget "CoreDataServiceTests" */ = {
 			isa = XCConfigurationList;
@@ -918,6 +935,7 @@
 				85DE95AE1F524F2700B30987 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -42,15 +42,13 @@ class DemoService {
         }
     }
     
-    func addNewImage(image: UIImage, imageID: String, position: Int16 = -1, imageName: String) {
+    func addNewImage(image: UIImage, position: Int16 = -1) {
         let context = CoreDataService.sharedCoreDataService.mainQueueContext
         
         if let imageData = UIImagePNGRepresentation(image) {
             let imageEntity = NSEntityDescription.insertNewObject(forEntityName: "Image", into: context) as! Image
             imageEntity.data = imageData as NSData
-            imageEntity.name = imageName
             imageEntity.position = position
-            imageEntity.id = imageID
         }
         do {
             try context.save()

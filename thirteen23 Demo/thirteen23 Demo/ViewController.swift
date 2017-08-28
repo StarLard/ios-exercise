@@ -19,26 +19,58 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBAction func downloadPressed(_ sender: Any) {
         downloadButton.isEnabled = false
         self.showActivityIndicator()
-        
-        self.getDataFromAPI(jsonKey: "image_ids") { result, error in
+        self.downloadImages() {
+            results, error in
             if let error = error {
                 print(error)
-                self.hideActivityIndicator()
-                self.presentAlert(title: "Unable to download images", message: "Please try again")
-                self.downloadButton.isEnabled = true
+                DispatchQueue.main.async {
+                    self.presentAlert(title: "Please try again", message: "Error downloading images")
+                    self.hideActivityIndicator()
+                    self.downloadButton.isEnabled = true
+                }
+                return
+            }
+            guard let downloadedImages = results else {
+                fatalError("Unable to unwrap downloaded images")
+            }
+            self.hideActivityIndicator()
+            DispatchQueue.main.async {
+                for image in downloadedImages {
+                    DemoService.sharedDemoService.addNewImage(image: image)
+                }
+                self.downloadButton.isHidden = true
+                self.refreshCollectionView()
+            }
+        }
+        
+    }
+    
+    // MARK: Properties (Private)
+    private var images: [Image] = []
+    
+    private func refreshCollectionView() {
+        self.images = DemoService.sharedDemoService.getImages()
+        self.images = images.sorted(by: { $0.position > $1.position })
+        self.imagesCollectionView.reloadData()
+    }
+    
+    private func downloadImages(completionHandler: @escaping (_ results: [UIImage]?, _ error: Error?) -> Void) {
+        var downloadedImages: [UIImage] = []
+        WebService.sharedWebService.getDataFromAPI(jsonKey: "image_ids") { result, error in
+            if let error = error {
+                completionHandler(nil, error)
                 return
             }
             guard let result = result else {
                 fatalError("Result from API was nil")
             }
             let downloadGroup = DispatchGroup()
-            var downloadGroupErrors: [Error] = []
             for id in result {
                 downloadGroup.enter()
-                self.getDataFromAPI(jsonKey: "url", apppendix: id) { result, apiError in
+                WebService.sharedWebService.getDataFromAPI(jsonKey: "url", apppendix: id) { result, apiError in
                     if let apiError = apiError {
-                        downloadGroupErrors.append(apiError)
                         downloadGroup.leave()
+                        completionHandler(nil, apiError)
                         return
                     }
                     guard let result = result else {
@@ -47,164 +79,22 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                     guard let imageURL = URL(string: result[0]) else {
                         fatalError("Unable to generate URL")
                     }
-                    self.downloadImageFromUrl(url: imageURL, imageID: id) { downloadError in
+                    WebService.sharedWebService.downloadImageFromUrl(url: imageURL, imageID: id) { image, downloadError in
                         if let downloadError = downloadError {
-                            downloadGroupErrors.append(downloadError)
+                            downloadGroup.leave()
+                            completionHandler(nil, downloadError)
                         }
+                        guard let image = image else {
+                            fatalError("Downloaded image was nil")
+                        }
+                        downloadedImages.append(image)
                         downloadGroup.leave()
                     }
                 }
             }
             downloadGroup.notify(queue: DispatchQueue.main) {
-                if downloadGroupErrors.count > 0 {
-                    for error in downloadGroupErrors {
-                        print(error)
-                    }
-                    self.hideActivityIndicator()
-                    self.presentAlert(title: "Unable to download images", message: "Please try again")
-                    self.downloadButton.isEnabled = true
-                    return
-                }
-                self.hideActivityIndicator()
-                self.downloadButton.isHidden = true
-                self.downloadButton.isEnabled = true
-                self.refreshCollectionView()
+                completionHandler(downloadedImages, nil)
             }
-        }
-    }
-    
-    // MARK: Properties (Private)
-    private var images: [Image] = []
-    private let loadingView = UIView()
-    
-    private func refreshCollectionView() {
-        self.images = DemoService.sharedDemoService.getImages()
-        self.images = images.sorted(by: { $0.position > $1.position })
-        self.imagesCollectionView.reloadData()
-    }
-    
-    private enum DemoError: Error {
-        case couldNotFetch(reason: String)
-        case noResponse(reason: String)
-        case conversionFailed(reason: String)
-    }
-    
-    private func presentAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title,
-                                                message: message,
-                                                preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default,handler: nil))
-        self.present(alertController, animated: true, completion: nil)
-    }
-    
-    private func getDataFromAPI(jsonKey: String,
-                                apppendix: String? = nil,
-                                completionHandler: @escaping (_ results: [String]?, _ error: Error?) -> Void) {
-        var results: [String] = []
-        var apiAddress = "https://t23-pics.herokuapp.com/pics"
-        if let apppendix = apppendix {
-            apiAddress = apiAddress  + "/\(apppendix)"
-        }
-        guard let apiURL = URL(string: apiAddress) else {
-            fatalError("Unable to generate URL")
-        }
-        let urlRequest = URLRequest(url: apiURL)
-        let session = URLSession.shared
-        let task = session.dataTask(with: urlRequest) { data, response, error in
-            if let error = error {
-                completionHandler(nil, DemoError.couldNotFetch(reason: "Error fetching data: \(error)"))
-                return
-            }
-            guard let responseData = data else {
-                completionHandler(nil, DemoError.noResponse(reason: "Did not recieve data from API call"))
-                return
-            }
-            do {
-                guard let dataJSON = try JSONSerialization.jsonObject(with: responseData, options: [])
-                    as? [String: Any] else {
-                        completionHandler(nil, DemoError.conversionFailed(reason: "Error trying to convert response data to JSON"))
-                        return
-                }
-                if apppendix == nil {
-                    guard let resultData = dataJSON[jsonKey] as? [String] else {
-                        completionHandler(nil, DemoError.conversionFailed(reason: "Could not get results from JSON"))
-                        return
-                    }
-                    results = resultData
-                }
-                else {
-                    guard let resultData = dataJSON[jsonKey] as? String else {
-                        completionHandler(nil, DemoError.conversionFailed(reason: "Could not get results from JSON"))
-                        return
-                    }
-                    results.append(resultData)
-                }
-                completionHandler(results, nil)
-                return
-                
-            } catch {
-                completionHandler(nil, DemoError.conversionFailed(reason: "Error trying to convert data to JSON"))
-                return
-            }
-        }
-        task.resume()
-    }
-    
-    private func downloadImageFromUrl(url: URL,
-                         imageID: String,
-                         completionHandler: @escaping (_ error: Error?) -> Void) {
-        URLSession.shared.dataTask(with: url) {
-            (data, response, error) in
-            if let error = error {
-                completionHandler(DemoError.couldNotFetch(reason: "Error fetching image data: \(error)"))
-                return
-            }
-            guard let responseData = data else {
-                completionHandler(DemoError.noResponse(reason: "Did not recieve image data from server"))
-                return
-            }
-            print("Download for \(response?.suggestedFilename ?? url.lastPathComponent) finished")
-            DispatchQueue.main.async() { () -> Void in
-                guard let image = UIImage(data: responseData) else {
-                    fatalError("Could not convert data to image")
-                }
-                DemoService.sharedDemoService.addNewImage(image: image,
-                                                          imageID: imageID,
-                                                          imageName: response?.suggestedFilename ?? url.lastPathComponent)
-                completionHandler(nil)
-            }
-        }.resume()
-    }
-    
-    func showActivityIndicator() {
-        DispatchQueue.main.async {
-            let spinner = UIActivityIndicatorView()
-            
-            self.loadingView.frame = self.view.frame
-            self.loadingView.center = self.view.center
-            self.loadingView.backgroundColor = UIColor.white
-            self.loadingView.alpha = 0.3
-            
-            spinner.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-            spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.whiteLarge
-            spinner.color = UIColor.gray
-            spinner.center = self.loadingView.center
-            spinner.startAnimating()
-            
-            self.loadingView.addSubview(spinner)
-            self.view.addSubview(self.loadingView)
-        }
-    }
-    
-    func hideActivityIndicator() {
-        DispatchQueue.main.async {
-            for view in self.loadingView.subviews {
-                if let spinner = view as? UIActivityIndicatorView {
-                    spinner.stopAnimating()
-                    spinner.removeFromSuperview()
-                }
-            }
-            self.loadingView.removeFromSuperview()
         }
     }
     
