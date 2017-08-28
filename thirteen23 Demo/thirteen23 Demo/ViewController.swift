@@ -11,7 +11,7 @@ import UIKit
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
     
     // MARK: Properties (IBOutlet)
-    @IBOutlet weak var imagesCollectionView: UICollectionView!
+    @IBOutlet weak var imagesCollectionView: ImagesCollectionView!
     @IBOutlet weak var trashCanLidView: UIImageView!
     @IBOutlet weak var downloadButton: UIButton!
     @IBOutlet weak var trashView: UIStackView!
@@ -43,7 +43,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.refreshCollectionView()
             }
         }
-        
     }
     
     // MARK: Properties (Private)
@@ -167,11 +166,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return images.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! ImagesCollectionViewCell
-        print(cell.image!.number)
     }
     
     func collectionView(_ collectionView: UICollectionView,
