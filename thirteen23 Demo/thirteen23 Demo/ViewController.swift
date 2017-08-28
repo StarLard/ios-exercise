@@ -132,7 +132,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
             let cell = self.imagesCollectionView.cellForItem(at: indexPath) as! ImagesCollectionViewCell
             self.selectedCell = cell
-            imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
+            _ = imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
         case UIGestureRecognizerState.changed:
             imagesCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
             let gestureCurrentPoint = gesture.location(in: self.view)

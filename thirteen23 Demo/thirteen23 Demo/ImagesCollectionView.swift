@@ -14,7 +14,6 @@ class ImagesCollectionView: UICollectionView {
     var interactiveView : UIView?
     var interactiveCell : ImagesCollectionViewCell?
     var highlightedCells : [ImagesCollectionViewCell] = []
-    var swapSet : Set<SwapDescription> = Set()
     var previousPoint : CGPoint?
     
     static let maximumDistanceDelta:CGFloat = 0.5
@@ -55,29 +54,14 @@ class ImagesCollectionView: UICollectionView {
     }
     
     override func endInteractiveMovement() {
-        if (self.shouldSwap(previousPoint!)) {
-            
-            if let hoverIndexPath = self.indexPathForItem(at: previousPoint!), let interactiveIndexPath = self.interactiveIndexPath {
-                
-                let swapDescription = SwapDescription(firstItem: interactiveIndexPath.item, secondItem: hoverIndexPath.item)
-                
-                if (!self.swapSet.contains(swapDescription)) {
-                    
-                    self.swapSet.insert(swapDescription)
-                    
-                    self.performBatchUpdates({
-                        self.moveItem(at: interactiveIndexPath, to: hoverIndexPath)
-                        self.moveItem(at: hoverIndexPath, to: interactiveIndexPath)
-                    }, completion: {(finished) in
-                        self.swapSet.remove(swapDescription)
-                        self.interactiveIndexPath = hoverIndexPath
-                        self.cleanup()
-
-                    })
-                }
-            } else {
+        if let hoverIndexPath = self.indexPathForItem(at: previousPoint!), let interactiveIndexPath = self.interactiveIndexPath {
+            self.performBatchUpdates({
+                self.moveItem(at: interactiveIndexPath, to: hoverIndexPath)
+                self.moveItem(at: hoverIndexPath, to: interactiveIndexPath)
+            }, completion: {(finished) in
+                self.interactiveIndexPath = hoverIndexPath
                 self.cleanup()
-            }
+            })
         } else {
             self.cleanup()
         }
@@ -98,37 +82,6 @@ class ImagesCollectionView: UICollectionView {
             cell.displaysShadow = false
         }
         self.highlightedCells = []
-        self.swapSet.removeAll()
-    }
-    
-    func shouldSwap(_ newPoint: CGPoint) -> Bool {
-        if let previousPoint = self.previousPoint {
-            let distance = previousPoint.distanceToPoint(newPoint)
-            return distance < ImagesCollectionView.maximumDistanceDelta
-        }
-        
-        return false
     }
 
-}
-
-extension CGPoint {
-    func distanceToPoint(_ p:CGPoint) -> CGFloat {
-        return sqrt(pow((p.x - x), 2) + pow((p.y - y), 2))
-    }
-}
-
-struct SwapDescription : Hashable {
-    var firstItem : Int
-    var secondItem : Int
-    
-    var hashValue: Int {
-        get {
-            return (firstItem * 10) + secondItem
-        }
-    }
-}
-
-func ==(lhs: SwapDescription, rhs: SwapDescription) -> Bool {
-    return lhs.firstItem == rhs.firstItem && lhs.secondItem == rhs.secondItem
 }
