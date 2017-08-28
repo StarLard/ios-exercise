@@ -71,9 +71,7 @@ class WebService {
         task.resume()
     }
     
-    func downloadImageFromUrl(url: URL,
-                                      imageID: String,
-                                      completionHandler: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
+    func downloadImageFromUrl(url: URL, completionHandler: @escaping (_ image: UIImage?, _ error: Error?) -> Void) {
         URLSession.shared.dataTask(with: url) {
             (data, response, error) in
             if let error = error {

@@ -42,12 +42,13 @@ class DemoService {
         }
     }
     
-    func addNewImage(image: UIImage, position: Int16 = -1) {
+    func addNewImage(image: UIImage, number: Int16, position: Int16 = -1) {
         let context = CoreDataService.sharedCoreDataService.mainQueueContext
         
         if let imageData = UIImagePNGRepresentation(image) {
             let imageEntity = NSEntityDescription.insertNewObject(forEntityName: "Image", into: context) as! Image
             imageEntity.data = imageData as NSData
+            imageEntity.number = number
             imageEntity.position = position
         }
         do {
@@ -56,7 +57,7 @@ class DemoService {
             fatalError("Failure to save context: \(error)")
         }
         CoreDataService.sharedCoreDataService.saveRootContext {
-            print("New image item saved")
+            print("New image \(number).png saved")
         }
     }
     
@@ -71,7 +72,7 @@ class DemoService {
             fatalError("Failure to save context: \(error)")
         }
         CoreDataService.sharedCoreDataService.saveRootContext {
-            print("Image position changes saved")
+            print("\(image.number).png moved to position \(position)")
         }
     }
     
