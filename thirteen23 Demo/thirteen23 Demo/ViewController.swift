@@ -36,8 +36,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
             self.hideActivityIndicator()
             DispatchQueue.main.async {
-                for imageTuple in downloadedImages {
-                    DemoService.sharedDemoService.addNewImage(image: imageTuple.0, number: imageTuple.1)
+                for (index, imageTuple) in downloadedImages.enumerated() {
+                    DemoService.sharedDemoService.addNewImage(image: imageTuple.0,
+                                                              number: imageTuple.1,
+                                                              position: Int16(index))
                 }
                 self.downloadButton.isHidden = true
                 self.refreshCollectionView()
@@ -49,7 +51,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     private var imagesBuffer: [Image] = []
     private var selectedCell: ImagesCollectionViewCell? = nil
     private var canIsOpen: Bool = false
-    private var deleteOffset: Int = 0
     
     private func checkOrder() {
         self.imagesBuffer = DemoService.sharedDemoService.getImages()
@@ -60,10 +61,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     private func refreshCollectionView() {
-        // Insert empty cells where position is missing
         self.checkOrder()
         self.imagesCollectionView.reloadData()
-        self.deleteOffset = 0
+    }
+    
+    private func getImageFromBufferForPosition(position: Int) -> Image?{
+        let position16 = Int16(position)
+        return self.imagesBuffer.filter({ $0.position == position16 }).first
     }
     
     private func openCan() {
@@ -186,34 +190,18 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         let maxInt16 = self.imagesBuffer.map{$0.position}.max()
         if let maxPosition = maxInt16 {
             let max = Int(maxPosition)
-            if max < 0 {
-                return self.imagesBuffer.count
-            }
             return max + 1
         }
         return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let imageIndex = indexPath.row - self.deleteOffset
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imagesCollectionViewCell", for: indexPath) as! ImagesCollectionViewCell
-        if imageIndex < imagesBuffer.count {
-            let image = imagesBuffer[imageIndex]
 
-            if image.position < 0 {
-                DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(indexPath.row))
-                cell.imageView.image = UIImage(data: (image.data as Data?)!)
-                cell.image = image
-            }
-            else if Int(image.position) == indexPath.row {
-                cell.imageView.image = UIImage(data: (image.data as Data?)!)
-                cell.image = image
-            } else {
-                self.deleteOffset += 1
-                cell.imageView.image = nil
-            }
+        if let image = self.getImageFromBufferForPosition(position: indexPath.row) {
+            cell.imageView.image = UIImage(data: (image.data as Data?)!)
+            cell.image = image
         } else {
-            self.deleteOffset += 1
             cell.imageView.image = nil
         }
         
@@ -229,7 +217,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         if !DemoService.sharedDemoService.imagesAreLoaded() {
             downloadButton.isHidden = false
         } else {
-            refreshCollectionView()
+            self.refreshCollectionView()
         }
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongGesture))
         longPressGesture.minimumPressDuration  = 0.1
