@@ -22,7 +22,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="d90-Sr-CEE" customClass="ImagesCollectionView" customModule="thirteen23_Demo" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="20" width="375" height="492"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="448"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="25" minimumInteritemSpacing="25" id="SBo-iF-GzQ">
                                     <size key="itemSize" width="100" height="100"/>
@@ -87,22 +87,38 @@
                                     <action selector="downloadPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Wez-0M-MwX"/>
                                 </connections>
                             </button>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zfF-8W-t7f">
+                                <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                                <items>
+                                    <navigationItem title="Thirteen23 Demo" id="FBg-7R-raf">
+                                        <barButtonItem key="rightBarButtonItem" enabled="NO" title="Reset" id="tmU-J0-gfm">
+                                            <connections>
+                                                <action selector="resetPressed:" destination="BYZ-38-t0r" id="4dZ-aX-HLS"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="pR6-R0-HAC" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-75" id="5ig-er-32Q"/>
-                            <constraint firstItem="d90-Sr-CEE" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="JvF-gx-1Tf"/>
+                            <constraint firstItem="zfF-8W-t7f" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="8FJ-GE-CYQ"/>
+                            <constraint firstItem="zfF-8W-t7f" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="KRl-Z0-TQx"/>
                             <constraint firstItem="pR6-R0-HAC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="MOy-w9-CHA"/>
                             <constraint firstItem="d90-Sr-CEE" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Nv4-pK-TYC"/>
                             <constraint firstAttribute="trailing" secondItem="d90-Sr-CEE" secondAttribute="trailing" id="OqN-0U-Ir9"/>
+                            <constraint firstAttribute="trailing" secondItem="zfF-8W-t7f" secondAttribute="trailing" id="dlb-Nr-cjx"/>
                             <constraint firstAttribute="bottom" secondItem="5b8-DW-cyG" secondAttribute="bottom" constant="25" id="ezT-SY-PoQ"/>
                             <constraint firstItem="5b8-DW-cyG" firstAttribute="top" secondItem="d90-Sr-CEE" secondAttribute="bottom" constant="25" id="gWa-Ri-9rz"/>
                             <constraint firstItem="5b8-DW-cyG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jmt-cR-Niq"/>
+                            <constraint firstItem="d90-Sr-CEE" firstAttribute="top" secondItem="zfF-8W-t7f" secondAttribute="bottom" id="lx8-yG-PSN"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="downloadButton" destination="pR6-R0-HAC" id="ypE-MX-czw"/>
                         <outlet property="imagesCollectionView" destination="d90-Sr-CEE" id="asx-g5-kZJ"/>
+                        <outlet property="resetButton" destination="tmU-J0-gfm" id="QrS-eZ-dqw"/>
                         <outlet property="trashCanLidView" destination="wn9-ez-Brr" id="qEf-Vm-5gT"/>
                         <outlet property="trashView" destination="5b8-DW-cyG" id="b2I-ed-dBE"/>
                     </connections>

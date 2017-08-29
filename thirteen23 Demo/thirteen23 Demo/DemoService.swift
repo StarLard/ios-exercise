@@ -90,6 +90,20 @@ class DemoService {
         }
     }
     
+    func clearAllData() {
+        let context = CoreDataService.sharedCoreDataService.mainQueueContext
+        let fetch = NSFetchRequest<NSFetchRequestResult>(entityName: "Image")
+        let request = NSBatchDeleteRequest(fetchRequest: fetch)
+        do {
+            try context.execute(request)
+        } catch {
+            fatalError("Unable to clear data")
+        }
+        CoreDataService.sharedCoreDataService.saveRootContext {
+            print("Successfully wiped data")
+        }
+    }
+    
     // MARK: Initialization
     fileprivate init() {
         

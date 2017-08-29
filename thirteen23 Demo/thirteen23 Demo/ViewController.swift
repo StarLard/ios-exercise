@@ -15,6 +15,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     @IBOutlet weak var trashCanLidView: UIImageView!
     @IBOutlet weak var downloadButton: UIButton!
     @IBOutlet weak var trashView: UIStackView!
+    @IBOutlet weak var resetButton: UIBarButtonItem!
 
     // MARK: Properties (IBAction)
     @IBAction func downloadPressed(_ sender: Any) {
@@ -41,10 +42,19 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                                                               number: imageTuple.1,
                                                               position: Int16(index))
                 }
+                self.resetButton.isEnabled = true
                 self.downloadButton.isHidden = true
                 self.refreshCollectionView()
             }
         }
+    }
+    @IBAction func resetPressed(_ sender: Any) {
+        DemoService.sharedDemoService.clearAllData()
+        self.downloadButton.isHidden = false
+        self.downloadButton.isEnabled = true
+        self.resetButton.isEnabled = false
+        self.imagesBuffer = []
+        self.imagesCollectionView.reloadData()
     }
     
     // MARK: Properties (Private)
@@ -217,6 +227,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         if !DemoService.sharedDemoService.imagesAreLoaded() {
             downloadButton.isHidden = false
         } else {
+            self.resetButton.isEnabled = true
             self.refreshCollectionView()
         }
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongGesture))

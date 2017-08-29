@@ -15,7 +15,7 @@ extension UIViewController{
             let spinner = UIActivityIndicatorView()
             let loadingView = UIView()
             
-            loadingView.tag = 1
+            loadingView.tag = 1993
             loadingView.frame = self.view.frame
             loadingView.center = self.view.center
             loadingView.backgroundColor = UIColor.white
@@ -34,7 +34,7 @@ extension UIViewController{
     
     func hideActivityIndicator() {
         DispatchQueue.main.async {
-            if let loadingView = self.view.viewWithTag(1) {
+            if let loadingView = self.view.viewWithTag(1993) {
                 for view in loadingView.subviews {
                     if let spinner = view as? UIActivityIndicatorView {
                         spinner.stopAnimating()
