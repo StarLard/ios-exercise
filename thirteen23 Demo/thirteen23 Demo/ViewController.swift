@@ -49,6 +49,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     private var imagesBuffer: [Image] = []
     private var selectedCell: ImagesCollectionViewCell? = nil
     private var canIsOpen: Bool = false
+    private var deleteOffset: Int = 0
     
     private func checkOrder() {
         self.imagesBuffer = DemoService.sharedDemoService.getImages()
@@ -59,8 +60,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     private func refreshCollectionView() {
+        // Insert empty cells where position is missing
         self.checkOrder()
         self.imagesCollectionView.reloadData()
+        self.deleteOffset = 0
     }
     
     private func openCan() {
@@ -140,8 +143,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             }
             let cell = self.imagesCollectionView.cellForItem(at: indexPath) as! ImagesCollectionViewCell
             self.selectedCell = cell
-            _ = imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
+            if cell.image != nil {
+                _ = imagesCollectionView.beginInteractiveMovementForItem(at: indexPath)
+            }
         case UIGestureRecognizerState.changed:
+            guard self.selectedCell?.image != nil else {
+                break
+            }
             imagesCollectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
             let gestureCurrentPoint = gesture.location(in: self.view)
             if trashView.frame.contains(gestureCurrentPoint) && !canIsOpen {
@@ -150,6 +158,10 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 self.closeCan()
             }
         case UIGestureRecognizerState.ended:
+            guard self.selectedCell?.image != nil else {
+                self.selectedCell = nil
+                break
+            }
             let gestureEndPoint = gesture.location(in: self.view)
             imagesCollectionView.endInteractiveMovement()
             if trashView.frame.contains(gestureEndPoint), let cell = selectedCell, let image = cell.image {
@@ -159,7 +171,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             } else {
                 self.checkOrder()
             }
-            selectedCell = nil
+            self.selectedCell = nil
         default:
             imagesCollectionView.cancelInteractiveMovement()
         }
@@ -171,18 +183,41 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imagesBuffer.count
+        let maxInt16 = self.imagesBuffer.map{$0.position}.max()
+        if let maxPosition = maxInt16 {
+            let max = Int(maxPosition)
+            if max < 0 {
+                return self.imagesBuffer.count
+            }
+            return max + 1
+        }
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let image = imagesBuffer[indexPath.row]
-        if image.position < 0 {
-            DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(indexPath.row))
-        }
+        let imageIndex = indexPath.row - self.deleteOffset
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imagesCollectionViewCell", for: indexPath) as! ImagesCollectionViewCell
+        if imageIndex < imagesBuffer.count {
+            let image = imagesBuffer[imageIndex]
+
+            if image.position < 0 {
+                DemoService.sharedDemoService.setImagePosition(image: image, position: Int16(indexPath.row))
+                cell.imageView.image = UIImage(data: (image.data as Data?)!)
+                cell.image = image
+            }
+            else if Int(image.position) == indexPath.row {
+                cell.imageView.image = UIImage(data: (image.data as Data?)!)
+                cell.image = image
+            } else {
+                self.deleteOffset += 1
+                cell.imageView.image = nil
+            }
+        } else {
+            self.deleteOffset += 1
+            cell.imageView.image = nil
+        }
+        
         cell.tag = indexPath.row
-        cell.imageView.image = UIImage(data: (image.data as Data?)!)
-        cell.image = image
         
         return cell
     }
@@ -197,6 +232,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
             refreshCollectionView()
         }
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.handleLongGesture))
+        longPressGesture.minimumPressDuration  = 0.1
         self.imagesCollectionView.addGestureRecognizer(longPressGesture)
         self.imagesCollectionView.clipsToBounds = false
     }

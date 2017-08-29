@@ -11,7 +11,7 @@ import UIKit
 class ImagesCollectionViewCell: UICollectionViewCell {
     // MARK: Properties (IBOutlet)
     @IBOutlet weak var imageView: UIImageView!
-    var image: Image?
+    var image: Image? = nil
     
     // MARK: Properties (Private)
     private var hasShadow: Bool = false
